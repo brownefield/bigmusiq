@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Living Songtree — BIG MUSIQ</title>
+<meta name="description" content="A 45-minute living archive. One continuous piece, fourteen worlds, always playing. #hellagoodmusiq">
+<meta property="og:title" content="The Living Songtree — BIG MUSIQ">
+<meta property="og:description" content="A 45-minute living archive. One continuous piece, fourteen worlds, always playing.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   THE LIVING SONGTREE
+   A synchronized, ambient, single-page experience.
+   One 45-minute piece, fourteen world-segments,
+   always playing in global time.
+   ============================================================ */
+
+:root {
+  --bg: #06070d;
+  --deep: #02030a;
+  --accent: #e8c98f;
+  --text: #eef3f1;
+  --muted: #6f7a82;
+  --line: #15171f;
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.55;
+  overflow: hidden;
+  height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+a { color: inherit; text-decoration: none; }
+::selection { background: var(--accent); color: var(--deep); }
+
+/* ===== Atmospheric backdrop ===== */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 800px 600px at 50% 100%, color-mix(in oklab, var(--accent) 8%, transparent) 0%, transparent 70%),
+    radial-gradient(ellipse 1200px 800px at 50% 50%, var(--deep) 0%, var(--bg) 80%);
+  transition: background 4s var(--ease);
+}
+
+.atmosphere::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.4), transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 80% 20%, rgba(255,255,255,0.35), transparent),
+    radial-gradient(1px 1px at 30% 80%, rgba(255,255,255,0.25), transparent),
+    radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,0.3), transparent),
+    radial-gradient(1px 1px at 10% 60%, rgba(255,255,255,0.35), transparent);
+  background-size: 500px 500px;
+  animation: drift 240s linear infinite;
+  opacity: 0.6;
+}
+@keyframes drift {
+  from { transform: translate3d(0,0,0); }
+  to { transform: translate3d(-500px, -500px, 0); }
+}
+
+/* ===== Layout ===== */
+.scene {
+  position: relative;
+  z-index: 1;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px;
+}
+
+/* ===== Top bar ===== */
+.topbar {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.topbar .home-link {
+  border-bottom: 1px solid transparent;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.topbar .home-link:hover { color: var(--accent); border-color: var(--accent); }
+.topbar .clock {
+  font-family: var(--serif);
+  font-variant-numeric: tabular-nums;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+/* ===== Tree (SVG) ===== */
+.tree-stage {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 980px;
+  position: relative;
+}
+.tree-svg {
+  width: 100%;
+  max-width: 720px;
+  height: auto;
+}
+
+/* Trunk + branches */
+.trunk { stroke: var(--line); stroke-width: 2; fill: none; opacity: 0.6; transition: stroke 4s var(--ease); }
+.branch { stroke: var(--line); stroke-width: 1.2; fill: none; opacity: 0.4; transition: stroke 4s var(--ease), opacity 1.2s var(--ease); }
+.branch.active { stroke: var(--accent); opacity: 0.85; }
+
+/* Nodes */
+.node {
+  cursor: default;
+}
+.node circle {
+  fill: var(--bg);
+  stroke: var(--line);
+  stroke-width: 1.5;
+  transition: all 1.2s var(--ease);
+}
+.node.active circle {
+  fill: var(--accent);
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 12px color-mix(in oklab, var(--accent) 60%, transparent));
+}
+.node text {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-style: italic;
+  fill: var(--muted);
+  text-anchor: middle;
+  transition: fill 1.2s var(--ease);
+  pointer-events: none;
+}
+.node.active text { fill: var(--text); }
+
+/* Reveal animation on load */
+.node { opacity: 0; animation: rise 0.8s var(--ease) forwards; }
+.branch { opacity: 0; animation: fadeIn 1.2s var(--ease) forwards; }
+@keyframes rise { to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { to { opacity: 0.4; } }
+
+/* ===== Center text (now-playing) ===== */
+.now {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  max-width: 360px;
+}
+.now-section {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 42px);
+  letter-spacing: -0.02em;
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  margin-bottom: 8px;
+  transition: opacity 1.6s var(--ease);
+}
+.now-mood {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+.now-anchor {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--accent);
+  opacity: 0.7;
+  line-height: 1.5;
+  transition: opacity 2s var(--ease);
+  max-width: 320px;
+  margin: 0 auto;
+}
+.now-anchor .ref {
+  display: block;
+  font-style: normal;
+  font-family: var(--sans);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* ===== Bottom bar (controls + progress) ===== */
+.controls {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.progress-ring {
+  width: 100%;
+  height: 2px;
+  background: var(--line);
+  border-radius: 1px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+  transition: width 1s linear;
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.enter-btn {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--accent);
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--accent) 40%, transparent);
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+.enter-btn:hover {
+  background: color-mix(in oklab, var(--accent) 12%, transparent);
+  border-color: var(--accent);
+}
+
+.mode-toggle {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.mode-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 4px 0;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s var(--ease);
+}
+.mode-btn.active { color: var(--accent); border-color: var(--accent); }
+.mode-btn:hover { color: var(--text); }
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .scene { padding: 20px 16px; }
+  .topbar { font-size: 10px; }
+  .now { max-width: 280px; }
+  .now-section { font-size: 26px; }
+  .now-anchor { font-size: 13px; }
+  .tree-svg { max-width: 100%; }
+  .node text { font-size: 9px; }
+}
+</style>
+</head>
+<body>
+
+<div class="atmosphere"></div>
+
+<div class="scene">
+
+  <!-- Top -->
+  <div class="topbar">
+    <a href="./" class="home-link">← Big Musiq</a>
+    <span>The Living Songtree</span>
+    <span class="clock" id="clock">--:--</span>
+  </div>
+
+  <!-- Tree -->
+  <div class="tree-stage">
+    <svg class="tree-svg" viewBox="0 0 720 520" xmlns="http://www.w3.org/2000/svg" id="tree-svg">
+      <!-- Trunk -->
+      <path class="trunk" d="M 360 480 Q 360 380 360 280 Q 360 200 360 120" />
+
+      <!-- Branches will be drawn dynamically -->
+      <g id="branches"></g>
+      <g id="nodes"></g>
+    </svg>
+
+    <!-- Now playing overlay -->
+    <div class="now">
+      <div class="now-section" id="now-section">The Hush Before</div>
+      <div class="now-mood" id="now-mood">prelude</div>
+      <div class="now-anchor" id="now-anchor">
+        Be still, and know.
+        <span class="ref" id="now-ref">Psalm 46:10</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <div class="progress-ring"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="control-row">
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="global" id="mode-global">Global</button>
+        <button class="mode-btn" data-mode="solo" id="mode-solo">Solo</button>
+      </div>
+      <button class="enter-btn" id="enter-btn">Enter the drone</button>
+      <span id="cycle-info">0 of 14</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   ===================== CONFIG ===============================
+   The 14 worlds, each ~3 minutes of a 45-minute global piece.
+   Total duration is computed from segments.
+   Anchors are short verse fragments shown during each section.
+   ============================================================ */
+
+const SEGMENTS = [
+  { name: "The Hush Before",      mood: "prelude",     dur: 180, anchor: "Be still, and know.",                       ref: "Psalm 46:10" },
+  { name: "Light on Water",       mood: "tidewater",   dur: 195, anchor: "Deep calls to deep.",                       ref: "Psalm 42:7" },
+  { name: "Cedar Hymn",           mood: "tidewater",   dur: 210, anchor: "The trees clap their hands.",               ref: "Isaiah 55:12" },
+  { name: "Furnace Hymn",         mood: "emberfall",   dur: 200, anchor: "Refined as silver.",                        ref: "Psalm 66:10" },
+  { name: "Rust + Ember",         mood: "emberfall",   dur: 190, anchor: "Even the rocks would cry out.",             ref: "Luke 19:40" },
+  { name: "Held Breath",          mood: "glasswater",  dur: 185, anchor: "He stilled the storm.",                     ref: "Psalm 107:29" },
+  { name: "Cathedral of Air",     mood: "glasswater",  dur: 220, anchor: "Lift up your eyes.",                        ref: "Psalm 121:1" },
+  { name: "Below the Keel",       mood: "deepcurrent", dur: 205, anchor: "If I make my bed in the depths.",           ref: "Psalm 139:8" },
+  { name: "Pressure",             mood: "deepcurrent", dur: 200, anchor: "Out of the depths I cry.",                  ref: "Psalm 130:1" },
+  { name: "The Watch",            mood: "tidewater",   dur: 195, anchor: "Watchmen wait for the morning.",            ref: "Psalm 130:6" },
+  { name: "Lantern, No Map",      mood: "tidewater",   dur: 180, anchor: "Your word is a lamp.",                      ref: "Psalm 119:105" },
+  { name: "Skylight",             mood: "glasswater",  dur: 190, anchor: "Morning by morning.",                       ref: "Lamentations 3:23" },
+  { name: "Ten Thousand Things",  mood: "deepcurrent", dur: 215, anchor: "He set eternity in the human heart.",       ref: "Ecclesiastes 3:11" },
+  { name: "The Long Amen",        mood: "tidewater",   dur: 235, anchor: "Surely goodness and mercy.",                ref: "Psalm 23:6" },
+];
+
+const MOODS = {
+  tidewater:   { bg:"#08161a", deep:"#040d10", accent:"#e8c98f" },
+  emberfall:   { bg:"#170d0a", deep:"#0c0604", accent:"#e08a4a" },
+  glasswater:  { bg:"#0a1320", deep:"#050a12", accent:"#cfe3ef" },
+  deepcurrent: { bg:"#0c0d18", deep:"#06060e", accent:"#9aa0e0" },
+  prelude:     { bg:"#06070d", deep:"#02030a", accent:"#e8c98f" },
+};
+/* =================== END CONFIG ============================ */
+
+
+const TOTAL_DURATION = SEGMENTS.reduce((sum, s) => sum + s.dur, 0); // seconds
+let mode = 'global';   // 'global' = synced to clock; 'solo' = synced to load time
+let soloStart = Date.now();
+let currentIndex = -1;
+let audioCtx = null;
+let droneNodes = null;
+
+// ============================================================
+// Determine which segment we're in
+// ============================================================
+function getCurrentSegmentIndex() {
+  let t;
+  if (mode === 'global') {
+    t = (Date.now() / 1000) % TOTAL_DURATION;
+  } else {
+    t = ((Date.now() - soloStart) / 1000) % TOTAL_DURATION;
+  }
+  let accumulated = 0;
+  for (let i = 0; i < SEGMENTS.length; i++) {
+    accumulated += SEGMENTS[i].dur;
+    if (t < accumulated) {
+      return { index: i, elapsed: t, segmentElapsed: t - (accumulated - SEGMENTS[i].dur) };
+    }
+  }
+  return { index: 0, elapsed: 0, segmentElapsed: 0 };
+}
+
+// ============================================================
+// Apply mood (color shift)
+// ============================================================
+function applyMood(moodKey) {
+  const m = MOODS[moodKey] || MOODS.prelude;
+  const r = document.documentElement.style;
+  r.setProperty('--bg', m.bg);
+  r.setProperty('--deep', m.deep);
+  r.setProperty('--accent', m.accent);
+}
+
+// ============================================================
+// Render the tree (nodes + branches)
+// ============================================================
+function renderTree() {
+  const branchesG = document.getElementById('branches');
+  const nodesG = document.getElementById('nodes');
+  branchesG.innerHTML = '';
+  nodesG.innerHTML = '';
+
+  // Tree layout: 14 nodes arranged on a spreading tree
+  // Trunk runs from (360, 480) up to (360, 120)
+  // Nodes alternate left/right, climbing
+
+  const positions = [
+    { x: 360, y: 460 }, // root / prelude (on trunk)
+    { x: 280, y: 430 },
+    { x: 440, y: 410 },
+    { x: 230, y: 380 },
+    { x: 490, y: 360 },
+    { x: 290, y: 330 },
+    { x: 430, y: 310 },
+    { x: 200, y: 280 },
+    { x: 520, y: 270 },
+    { x: 260, y: 240 },
+    { x: 460, y: 220 },
+    { x: 320, y: 190 },
+    { x: 400, y: 170 },
+    { x: 360, y: 130 }, // crown
+  ];
+
+  positions.forEach((pos, i) => {
+    const seg = SEGMENTS[i];
+
+    // Branch line from trunk-anchor to node
+    const trunkY = Math.min(480, Math.max(120, pos.y + 20));
+    const branch = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    branch.setAttribute('class', 'branch');
+    branch.setAttribute('id', `branch-${i}`);
+    branch.setAttribute('d', `M 360 ${trunkY} Q ${(360 + pos.x) / 2} ${pos.y + 10} ${pos.x} ${pos.y}`);
+    branch.style.animationDelay = (i * 0.06) + 's';
+    branchesG.appendChild(branch);
+
+    // Node group
+    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    g.setAttribute('class', 'node');
+    g.setAttribute('id', `node-${i}`);
+    g.style.animationDelay = (0.4 + i * 0.06) + 's';
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', pos.x);
+    circle.setAttribute('cy', pos.y);
+    circle.setAttribute('r', 5);
+    g.appendChild(circle);
+
+    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    text.setAttribute('x', pos.x);
+    text.setAttribute('y', pos.y - 12);
+    text.textContent = String(i + 1).padStart(2, '0');
+    g.appendChild(text);
+
+    nodesG.appendChild(g);
+  });
+}
+
+// ============================================================
+// Update the "now playing" UI
+// ============================================================
+function updateNow() {
+  const { index, segmentElapsed } = getCurrentSegmentIndex();
+  const seg = SEGMENTS[index];
+
+  if (index !== currentIndex) {
+    // Crossfade text out, in
+    const sectionEl = document.getElementById('now-section');
+    const moodEl = document.getElementById('now-mood');
+    const anchorEl = document.getElementById('now-anchor');
+    const refEl = document.getElementById('now-ref');
+
+    sectionEl.style.opacity = '0';
+    anchorEl.style.opacity = '0';
+
+    setTimeout(() => {
+      sectionEl.textContent = seg.name;
+      moodEl.textContent = seg.mood;
+      anchorEl.firstChild.textContent = seg.anchor + ' ';
+      refEl.textContent = seg.ref;
+      sectionEl.style.opacity = '1';
+      anchorEl.style.opacity = '0.7';
+    }, 600);
+
+    // Update tree highlight
+    document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+    document.querySelectorAll('.branch').forEach(n => n.classList.remove('active'));
+    document.getElementById(`node-${index}`)?.classList.add('active');
+    document.getElementById(`branch-${index}`)?.classList.add('active');
+
+    // Apply mood
+    applyMood(seg.mood);
+
+    // Update drone if running
+    if (audioCtx && droneNodes) updateDrone(seg.mood);
+
+    currentIndex = index;
+  }
+
+  // Update progress within segment
+  const pct = (segmentElapsed / seg.dur) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Update cycle info
+  document.getElementById('cycle-info').textContent = `${index + 1} of ${SEGMENTS.length}`;
+
+  // Update clock
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  document.getElementById('clock').textContent = `${hh}:${mm}`;
+}
+
+// ============================================================
+// Ambient drone (Web Audio)
+// Layered sine waves, slowly modulated. Optional — user must click "Enter the drone."
+// ============================================================
+function startDrone() {
+  if (audioCtx) return;
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+  // Master gain
+  const master = audioCtx.createGain();
+  master.gain.value = 0;
+  master.connect(audioCtx.destination);
+
+  // Three layered oscillators forming a soft chord
+  const freqs = [110, 165, 220]; // A2, E3, A3 — open fifth + octave
+  const oscs = freqs.map(f => {
+    const o = audioCtx.createOscillator();
+    o.type = 'sine';
+    o.frequency.value = f;
+    const g = audioCtx.createGain();
+    g.gain.value = 0.08;
+    o.connect(g);
+    g.connect(master);
+    o.start();
+    return { osc: o, gain: g };
+  });
+
+  // Slow LFO on master volume for breathing
+  const lfo = audioCtx.createOscillator();
+  lfo.frequency.value = 0.06;
+  const lfoGain = audioCtx.createGain();
+  lfoGain.gain.value = 0.04;
+  lfo.connect(lfoGain);
+  lfoGain.connect(master.gain);
+  lfo.start();
+
+  // Fade in
+  master.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 4);
+
+  droneNodes = { master, oscs, lfo };
+
+  document.getElementById('enter-btn').textContent = 'Leave the drone';
+}
+
+function stopDrone() {
+  if (!audioCtx || !droneNodes) return;
+  const t = audioCtx.currentTime;
+  droneNodes.master.gain.linearRampToValueAtTime(0, t + 2);
+  setTimeout(() => {
+    droneNodes.oscs.forEach(o => o.osc.stop());
+    droneNodes.lfo.stop();
+    audioCtx.close();
+    audioCtx = null;
+    droneNodes = null;
+    document.getElementById('enter-btn').textContent = 'Enter the drone';
+  }, 2100);
+}
+
+function updateDrone(moodKey) {
+  if (!audioCtx || !droneNodes) return;
+  // Subtle re-tuning by mood — small detunes, not key changes
+  const detunes = {
+    tidewater: 0,
+    emberfall: -8,    // slightly flat/warm
+    glasswater: +12,  // slightly bright
+    deepcurrent: -20, // lower/darker
+    prelude: 0,
+  };
+  const cents = detunes[moodKey] || 0;
+  droneNodes.oscs.forEach(({ osc }) => {
+    osc.detune.linearRampToValueAtTime(cents, audioCtx.currentTime + 6);
+  });
+}
+
+// ============================================================
+// Mode toggle
+// ============================================================
+document.getElementById('mode-global').addEventListener('click', () => {
+  mode = 'global';
+  document.getElementById('mode-global').classList.add('active');
+  document.getElementById('mode-solo').classList.remove('active');
+  currentIndex = -1; // force re-render
+});
+document.getElementById('mode-solo').addEventListener('click', () => {
+  mode = 'solo';
+  soloStart = Date.now();
+  document.getElementById('mode-solo').classList.add('active');
+  document.getElementById('mode-global').classList.remove('active');
+  currentIndex = -1;
+});
+
+document.getElementById('enter-btn').addEventListener('click', () => {
+  if (audioCtx) stopDrone();
+  else startDrone();
+});
+
+// ============================================================
+// Boot
+// ============================================================
+renderTree();
+updateNow();
+setInterval(updateNow, 1000);
+</script>
+</body>
+</html>

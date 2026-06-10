@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BIG MUSIQ — The Living Songtree</title>
+<meta name="description" content="A living archive of music. Worlds you can walk into. #hellagoodmusiq">
+<meta property="og:title" content="BIG MUSIQ — The Living Songtree">
+<meta property="og:description" content="A living archive of music. Worlds you can walk into.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+
+<style>
+/* ============================================================
+   BIG MUSIQ — Living Songtree
+   Single static file. SoundCloud Widget API drives audio.
+   World theming via CSS custom properties.
+   ============================================================ */
+
+:root {
+  /* These vars are overwritten dynamically by applyWorld() */
+  --bg: #08161a;
+  --deep: #040d10;
+  --accent: #e8c98f;
+  --accent2: #5fa8a0;
+  --text: #eef3f1;
+  --muted: #7e918d;
+  --line: #1b2f33;
+
+  --serif: 'Fraunces', Georgia, serif;
+  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+
+  --player-h: 92px;
+  --maxw: 1100px;
+  --ease: cubic-bezier(.4, .0, .2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background 1.2s var(--ease), color 1.2s var(--ease);
+}
+
+body {
+  min-height: 100vh;
+  padding-bottom: calc(var(--player-h) + 24px);
+  background:
+    radial-gradient(ellipse at top, color-mix(in oklab, var(--accent2) 12%, transparent) 0%, transparent 55%),
+    radial-gradient(ellipse at bottom, var(--deep) 0%, var(--bg) 70%);
+  background-attachment: fixed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+a { color: inherit; text-decoration: none; }
+
+::selection { background: var(--accent); color: var(--deep); }
+
+/* ===== Header ===== */
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+header.site {
+  padding: 32px 0 24px;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.wordmark {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(28px, 4.2vw, 44px);
+  letter-spacing: -0.02em;
+  font-variation-settings: 'opsz' 144, 'SOFT' 30;
+}
+.wordmark .musiq { color: var(--accent); }
+
+.world-pill {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.world-pill .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+  transition: background 1.2s var(--ease), box-shadow 1.2s var(--ease);
+}
+
+/* ===== Beacon (featured single) ===== */
+.beacon {
+  padding: 64px 0 48px;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease);
+}
+
+.beacon-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.beacon-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(40px, 7vw, 84px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-variation-settings: 'opsz' 144, 'SOFT' 50;
+  margin-bottom: 12px;
+}
+
+.beacon-meta {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.beacon-meta span { display: inline-flex; gap: 6px; align-items: center; }
+.beacon-meta .sep { color: var(--line); }
+
+.beacon-note {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(17px, 1.8vw, 21px);
+  color: var(--text);
+  max-width: 56ch;
+  margin-bottom: 32px;
+  opacity: 0.85;
+}
+
+.beacon-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.3s var(--ease);
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary {
+  background: var(--accent);
+  color: var(--deep);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+.btn.primary:hover {
+  background: transparent;
+  color: var(--accent);
+}
+
+.stream-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--muted);
+  align-items: center;
+}
+.stream-links a {
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+.stream-links a:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ===== The Hold (library) ===== */
+.hold { padding: 64px 0 48px; }
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease);
+}
+
+.section-title {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(28px, 4vw, 40px);
+  letter-spacing: -0.02em;
+  font-variation-settings: 'opsz' 144, 'SOFT' 40;
+}
+
+.section-sub {
+  font-size: 13px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.world-block { margin-bottom: 56px; }
+.world-block:last-child { margin-bottom: 0; }
+
+.world-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.world-name {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+.world-name .glyph {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.world-tag {
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.track-list {
+  list-style: none;
+  border-top: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease);
+}
+
+.track {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease), background 0.2s var(--ease);
+  cursor: pointer;
+}
+.track:hover { background: color-mix(in oklab, var(--accent) 4%, transparent); }
+.track.playing { background: color-mix(in oklab, var(--accent) 8%, transparent); }
+.track.empty { opacity: 0.4; cursor: default; }
+.track.empty:hover { background: transparent; }
+
+.track-num {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.track-title {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.track-meta {
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.track-status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  transition: all 0.3s var(--ease);
+}
+.track-status.released { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
+.track-status.demo { color: var(--accent2); border-color: color-mix(in oklab, var(--accent2) 50%, transparent); }
+.track-status.idea { color: var(--muted); }
+.track-status.coming { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
+
+@media (max-width: 640px) {
+  .track { grid-template-columns: 28px 1fr auto; gap: 12px; padding: 14px 0; }
+  .track-meta { display: none; }
+  .track-title { font-size: 15px; }
+}
+
+/* ===== Footer ===== */
+footer.site {
+  padding: 64px 0 32px;
+  border-top: 1px solid var(--line);
+  transition: border-color 1.2s var(--ease);
+}
+.foot-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  color: var(--muted);
+}
+.foot-tag {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text);
+  opacity: 0.7;
+}
+.foot-hash {
+  font-family: var(--sans);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ===== Persistent Player ===== */
+.player {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--player-h);
+  background: color-mix(in oklab, var(--deep) 92%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--line);
+  transition: background 1.2s var(--ease), border-color 1.2s var(--ease);
+  z-index: 50;
+}
+.player-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.play-btn {
+  width: 48px; height: 48px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--deep);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--ease);
+}
+.play-btn:hover { transform: scale(1.05); }
+.play-btn svg { width: 20px; height: 20px; }
+
+.player-now {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+.now-title {
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.now-world {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.player-progress {
+  flex: 1;
+  max-width: 280px;
+  height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+.player-progress .fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.2s linear;
+}
+
+.player-time {
+  font-family: var(--serif);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  :root { --player-h: 76px; }
+  .player-inner { gap: 12px; padding: 0 16px; }
+  .play-btn { width: 40px; height: 40px; }
+  .player-progress { display: none; }
+  .player-time { display: none; }
+  .now-title { font-size: 14px; }
+}
+
+/* Hidden SoundCloud iframe — audio engine, not visible */
+#sc-frame {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  left: -9999px;
+}
+
+/* Idle state */
+.player.idle .play-btn { opacity: 0.5; cursor: default; }
+.player.idle .now-title { color: var(--muted); font-style: italic; }
+</style>
+</head>
+<body>
+
+<!-- ===== Hidden SoundCloud iframe (audio engine) ===== -->
+<iframe id="sc-frame"
+  allow="autoplay"
+  src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/293&auto_play=false&visual=false">
+</iframe>
+
+<!-- ===== Header ===== -->
+<header class="site">
+  <div class="wrap brand">
+    <a href="#" class="wordmark">BIG <span class="musiq">MUSIQ</span></a>
+    <div class="world-pill"><span class="dot"></span><span id="world-name-label">Tidewater · home current</span></div>
+  </div>
+</header>
+
+<!-- ===== The Beacon (featured single) ===== -->
+<section class="beacon">
+  <div class="wrap">
+    <div class="beacon-eyebrow" id="beacon-status">Coming Soon</div>
+    <h1 class="beacon-title" id="beacon-title">Open Water</h1>
+    <div class="beacon-meta">
+      <span id="beacon-world">Tidewater</span>
+      <span class="sep">·</span>
+      <span id="beacon-daw">Logic Pro</span>
+    </div>
+    <p class="beacon-note" id="beacon-note">First light. The one going to streaming.</p>
+    <div class="beacon-actions">
+      <button class="btn primary" id="beacon-play">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>
+        <span>Play The Beacon</span>
+      </button>
+      <div class="stream-links" id="stream-links"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== The Hold (library) ===== -->
+<section class="hold">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 class="section-title">The Hold</h2>
+      <span class="section-sub">A living archive. Worlds shift as the music moves.</span>
+    </div>
+    <div id="worlds-container"></div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="site">
+  <div class="wrap foot-row">
+    <div>
+      <div class="foot-tag">Worlds you can walk into.</div>
+      <div style="margin-top:6px;">© <span id="year"></span> Big Musiq · A Brownefield Holdings project</div>
+    </div>
+    <div class="foot-hash">#hellagoodmusiq</div>
+  </div>
+</footer>
+
+<!-- ===== Persistent Player ===== -->
+<div class="player idle" id="player">
+  <div class="player-inner">
+    <button class="play-btn" id="play-toggle" aria-label="Play / Pause">
+      <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <div class="player-now">
+      <div class="now-title" id="now-title">Nothing loaded yet</div>
+      <div class="now-world" id="now-world">Pick a track</div>
+    </div>
+    <div class="player-progress" id="progress"><div class="fill" id="progress-fill"></div></div>
+    <div class="player-time" id="time">0:00 / 0:00</div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   ===================== CONFIG BLOCK =========================
+   Paste SoundCloud track URLs in `scUrl` fields below.
+   Format: https://soundcloud.com/your-name/track-name
+   To add a song: copy one line in TRACKS, paste a URL, pick a world.
+   ============================================================ */
+
+const BEACON = {
+  title:  "Open Water",
+  status: "coming soon",          // e.g. "out now" once it's live
+  world:  "tidewater",
+  daw:    "Logic Pro",
+  note:   "First light. The one going to streaming.",
+  scUrl:  "",                      // <-- paste your single's SoundCloud URL
+  links: [                         // <-- streaming links (use "#" until live)
+    { label:"Spotify",     href:"#" },
+    { label:"Apple Music", href:"#" },
+    { label:"iTunes",      href:"#" },
+    { label:"YouTube",     href:"#" },
+  ],
+};
+
+const TRACKS = [
+  { title:"Salt & Cedar",       world:"tidewater",   daw:"Logic Pro", status:"demo",     scUrl:"" },
+  { title:"Lantern, No Map",    world:"tidewater",   daw:"FL Studio", status:"idea",     scUrl:"" },
+  { title:"Low Tide Theme",     world:"tidewater",   daw:"Logic Pro", status:"demo",     scUrl:"" },
+  { title:"Furnace Hymn",       world:"emberfall",   daw:"FL Studio", status:"demo",     scUrl:"" },
+  { title:"Rust on the Hull",   world:"emberfall",   daw:"FL Studio", status:"idea",     scUrl:"" },
+  { title:"Amber Drift",        world:"emberfall",   daw:"Logic Pro", status:"released", scUrl:"" },
+  { title:"Held Breath",        world:"glasswater",  daw:"Logic Pro", status:"idea",     scUrl:"" },
+  { title:"Skylight",           world:"glasswater",  daw:"FL Studio", status:"demo",     scUrl:"" },
+  { title:"Cathedral of Air",   world:"glasswater",  daw:"Logic Pro", status:"demo",     scUrl:"" },
+  { title:"Below the Keel",     world:"deepcurrent", daw:"FL Studio", status:"idea",     scUrl:"" },
+  { title:"Pressure",           world:"deepcurrent", daw:"Logic Pro", status:"demo",     scUrl:"" },
+  { title:"Ten Thousand Things",world:"deepcurrent", daw:"FL Studio", status:"idea",     scUrl:"" },
+];
+
+const WORLDS = {
+  tidewater:  { name:"Tidewater",  tag:"home current",       bg:"#08161a", deep:"#040d10", accent:"#e8c98f", accent2:"#5fa8a0", text:"#eef3f1", muted:"#7e918d", line:"#1b2f33" },
+  emberfall:  { name:"Emberfall",  tag:"warm dark",          bg:"#170d0a", deep:"#0c0604", accent:"#e08a4a", accent2:"#b8553a", text:"#f4e9df", muted:"#9b7c6c", line:"#2e1c14" },
+  glasswater: { name:"Glasswater", tag:"airy + bright",      bg:"#0a1320", deep:"#050a12", accent:"#cfe3ef", accent2:"#7fb6d8", text:"#eef4fa", muted:"#7e93a8", line:"#16263a" },
+  deepcurrent:{ name:"Deepcurrent",tag:"low + slow",         bg:"#0c0d18", deep:"#06060e", accent:"#9aa0e0", accent2:"#5a5fae", text:"#e9eaf6", muted:"#7c7e9a", line:"#1a1b2c" },
+};
+/* =================== END CONFIG ============================ */
+
+
+// ============================================================
+// THEMING
+// ============================================================
+function applyWorld(key) {
+  const w = WORLDS[key];
+  if (!w) return;
+  const r = document.documentElement.style;
+  r.setProperty('--bg', w.bg);
+  r.setProperty('--deep', w.deep);
+  r.setProperty('--accent', w.accent);
+  r.setProperty('--accent2', w.accent2);
+  r.setProperty('--text', w.text);
+  r.setProperty('--muted', w.muted);
+  r.setProperty('--line', w.line);
+  document.getElementById('world-name-label').textContent = `${w.name} · ${w.tag}`;
+}
+
+// ============================================================
+// RENDER BEACON
+// ============================================================
+function renderBeacon() {
+  document.getElementById('beacon-title').textContent = BEACON.title;
+  document.getElementById('beacon-status').textContent = BEACON.status.toUpperCase();
+  document.getElementById('beacon-world').textContent = WORLDS[BEACON.world]?.name || BEACON.world;
+  document.getElementById('beacon-daw').textContent = BEACON.daw;
+  document.getElementById('beacon-note').textContent = BEACON.note;
+
+  const linksEl = document.getElementById('stream-links');
+  linksEl.innerHTML = '';
+  BEACON.links.forEach((link, i) => {
+    if (i > 0) linksEl.appendChild(Object.assign(document.createElement('span'), { textContent: '·', style: 'color:var(--line)' }));
+    const a = document.createElement('a');
+    a.href = link.href;
+    a.textContent = link.label;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    linksEl.appendChild(a);
+  });
+
+  const beaconPlay = document.getElementById('beacon-play');
+  if (!BEACON.scUrl) {
+    beaconPlay.style.opacity = '0.5';
+    beaconPlay.style.cursor = 'not-allowed';
+    beaconPlay.title = 'No track URL set yet';
+  }
+  beaconPlay.addEventListener('click', () => {
+    if (!BEACON.scUrl) return;
+    playTrack({ title: BEACON.title, world: BEACON.world, scUrl: BEACON.scUrl });
+  });
+}
+
+// ============================================================
+// RENDER LIBRARY (THE HOLD)
+// ============================================================
+function renderLibrary() {
+  const container = document.getElementById('worlds-container');
+  container.innerHTML = '';
+
+  const order = ['tidewater', 'emberfall', 'glasswater', 'deepcurrent'];
+
+  order.forEach(worldKey => {
+    const world = WORLDS[worldKey];
+    const tracks = TRACKS.filter(t => t.world === worldKey);
+    if (tracks.length === 0) return;
+
+    const block = document.createElement('div');
+    block.className = 'world-block';
+    block.innerHTML = `
+      <div class="world-head">
+        <div class="world-name"><span class="glyph" style="background:${world.accent}"></span>${world.name}</div>
+        <div class="world-tag">${world.tag}</div>
+      </div>
+      <ul class="track-list"></ul>
+    `;
+
+    const list = block.querySelector('.track-list');
+    tracks.forEach((track, i) => {
+      const li = document.createElement('li');
+      li.className = 'track' + (track.scUrl ? '' : ' empty');
+      li.innerHTML = `
+        <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="track-title">${track.title}</div>
+        <div class="track-meta">${track.daw}</div>
+        <div class="track-status ${track.status === 'coming soon' ? 'coming' : track.status}">${track.status}</div>
+      `;
+      if (track.scUrl) {
+        li.addEventListener('click', () => playTrack(track));
+      }
+      list.appendChild(li);
+    });
+
+    container.appendChild(block);
+  });
+}
+
+// ============================================================
+// SOUNDCLOUD PLAYER
+// ============================================================
+let scWidget = null;
+let currentTrack = null;
+let isPlaying = false;
+let duration = 0;
+
+function initWidget() {
+  const iframe = document.getElementById('sc-frame');
+  scWidget = SC.Widget(iframe);
+  scWidget.bind(SC.Widget.Events.READY, () => {
+    // Ready, but no track loaded yet
+  });
+  scWidget.bind(SC.Widget.Events.PLAY, () => {
+    isPlaying = true;
+    updatePlayIcon();
+  });
+  scWidget.bind(SC.Widget.Events.PAUSE, () => {
+    isPlaying = false;
+    updatePlayIcon();
+  });
+  scWidget.bind(SC.Widget.Events.FINISH, () => {
+    isPlaying = false;
+    updatePlayIcon();
+  });
+  scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, (e) => {
+    const fill = document.getElementById('progress-fill');
+    fill.style.width = (e.relativePosition * 100) + '%';
+    if (duration > 0) {
+      const cur = e.currentPosition / 1000;
+      document.getElementById('time').textContent = `${fmtTime(cur)} / ${fmtTime(duration / 1000)}`;
+    }
+  });
+}
+
+function fmtTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function playTrack(track) {
+  if (!scWidget || !track.scUrl) return;
+
+  // Highlight in list
+  document.querySelectorAll('.track').forEach(el => el.classList.remove('playing'));
+
+  currentTrack = track;
+  applyWorld(track.world);
+
+  // Update player UI
+  document.getElementById('player').classList.remove('idle');
+  document.getElementById('now-title').textContent = track.title;
+  document.getElementById('now-world').textContent = WORLDS[track.world]?.name || track.world;
+
+  // Load into widget
+  scWidget.load(track.scUrl, {
+    auto_play: true,
+    visual: false,
+    callback: () => {
+      scWidget.getDuration((d) => { duration = d; });
+    }
+  });
+}
+
+function togglePlay() {
+  if (!scWidget || !currentTrack) return;
+  if (isPlaying) scWidget.pause();
+  else scWidget.play();
+}
+
+function updatePlayIcon() {
+  const icon = document.getElementById('play-icon');
+  if (isPlaying) {
+    icon.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
+  } else {
+    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+  }
+}
+
+// Progress bar click-to-seek
+document.getElementById('progress').addEventListener('click', (e) => {
+  if (!scWidget || !duration) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const ratio = (e.clientX - rect.left) / rect.width;
+  scWidget.seekTo(duration * ratio);
+});
+
+document.getElementById('play-toggle').addEventListener('click', togglePlay);
+
+// ============================================================
+// BOOT
+// ============================================================
+document.getElementById('year').textContent = new Date().getFullYear();
+applyWorld('tidewater');
+renderBeacon();
+renderLibrary();
+initWidget();
+</script>
+</body>
+</html>
