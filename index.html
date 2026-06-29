@@ -17,25 +17,23 @@
 
 <style>
 /* ============================================================
-   BIG MUSIQ — Living Songtree
+   BIG MUSIQ — Morning Coastal
    Single static file. SoundCloud Widget API drives audio.
-   World theming via CSS custom properties.
    ============================================================ */
 
 :root {
-  /* These vars are overwritten dynamically by applyWorld() */
-  --bg: #08161a;
-  --deep: #040d10;
-  --accent: #e8c98f;
-  --accent2: #5fa8a0;
-  --text: #eef3f1;
-  --muted: #7e918d;
-  --line: #1b2f33;
+  --bg:      #F7F4EE;
+  --deep:    #FFFEFB;
+  --accent:  #C85A24;
+  --accent2: #2E8FA0;
+  --text:    #1C1C1A;
+  --muted:   #7A8680;
+  --line:    #DDE5E0;
 
   --serif: 'Fraunces', Georgia, serif;
-  --sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --sans:  'Hanken Grotesk', system-ui, -apple-system, sans-serif;
 
-  --player-h: 92px;
+  --player-h: 88px;
   --maxw: 1100px;
   --ease: cubic-bezier(.4, .0, .2, 1);
 }
@@ -48,16 +46,11 @@ html, body {
   font-family: var(--sans);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
-  transition: background 1.2s var(--ease), color 1.2s var(--ease);
 }
 
 body {
   min-height: 100vh;
   padding-bottom: calc(var(--player-h) + 24px);
-  background:
-    radial-gradient(ellipse at top, color-mix(in oklab, var(--accent2) 12%, transparent) 0%, transparent 55%),
-    radial-gradient(ellipse at bottom, var(--deep) 0%, var(--bg) 70%);
-  background-attachment: fixed;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -68,16 +61,17 @@ body {
 }
 
 a { color: inherit; text-decoration: none; }
+button { font-family: var(--sans); }
 
-::selection { background: var(--accent); color: var(--deep); }
+::selection { background: var(--accent); color: #fff; }
 
-/* ===== Header ===== */
+/* ===== Layout ===== */
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
 
+/* ===== Header ===== */
 header.site {
-  padding: 32px 0 24px;
+  padding: 28px 0 20px;
   border-bottom: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease);
 }
 
 .brand {
@@ -91,76 +85,71 @@ header.site {
 .wordmark {
   font-family: var(--serif);
   font-weight: 600;
-  font-size: clamp(28px, 4.2vw, 44px);
+  font-size: clamp(26px, 4vw, 42px);
   letter-spacing: -0.02em;
-  font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  color: var(--text);
+  font-variation-settings: 'opsz' 144;
 }
 .wordmark .musiq { color: var(--accent); }
 
 .world-pill {
-  font-family: var(--sans);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .world-pill .dot {
-  width: 8px; height: 8px;
+  width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
-  transition: background 1.2s var(--ease), box-shadow 1.2s var(--ease);
+  transition: background 0.6s var(--ease);
 }
 
 /* ===== Beacon (featured single) ===== */
 .beacon {
-  padding: 64px 0 48px;
+  padding: 56px 0 44px;
   border-bottom: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease);
 }
 
 .beacon-eyebrow {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .beacon-title {
   font-family: var(--serif);
   font-weight: 400;
-  font-size: clamp(40px, 7vw, 84px);
+  font-size: clamp(38px, 7vw, 80px);
   line-height: 1.02;
   letter-spacing: -0.03em;
-  font-variation-settings: 'opsz' 144, 'SOFT' 50;
-  margin-bottom: 12px;
+  color: var(--text);
+  font-variation-settings: 'opsz' 144;
+  margin-bottom: 10px;
 }
 
 .beacon-meta {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
-  margin-bottom: 24px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
-.beacon-meta span { display: inline-flex; gap: 6px; align-items: center; }
-.beacon-meta .sep { color: var(--line); }
 
 .beacon-note {
   font-family: var(--serif);
   font-style: italic;
-  font-size: clamp(17px, 1.8vw, 21px);
+  font-size: clamp(16px, 1.8vw, 20px);
   color: var(--text);
-  max-width: 56ch;
-  margin-bottom: 32px;
-  opacity: 0.85;
+  max-width: 52ch;
+  margin-bottom: 28px;
+  opacity: 0.8;
+  font-variation-settings: 'opsz' 72;
 }
 
 .beacon-actions {
@@ -174,9 +163,8 @@ header.site {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 20px;
-  font-family: var(--sans);
-  font-size: 14px;
+  padding: 11px 20px;
+  font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.02em;
   border-radius: 999px;
@@ -184,156 +172,251 @@ header.site {
   background: transparent;
   color: var(--text);
   cursor: pointer;
-  transition: all 0.3s var(--ease);
+  transition: all 0.25s var(--ease);
 }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 .btn.primary {
   background: var(--accent);
-  color: var(--deep);
+  color: #fff;
   border-color: var(--accent);
   font-weight: 600;
 }
-.btn.primary:hover {
-  background: transparent;
-  color: var(--accent);
-}
+.btn.primary:hover { background: #A8481C; border-color: #A8481C; }
 
 .stream-links {
   display: flex;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   align-items: center;
 }
 .stream-links a {
   border-bottom: 1px solid transparent;
-  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease);
 }
 .stream-links a:hover { color: var(--accent); border-color: var(--accent); }
 
-/* ===== The Hold (library) ===== */
-.hold { padding: 64px 0 48px; }
-
-.section-head {
+/* ===== Coastal Backdrop ===== */
+.coastal-backdrop {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 40px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease);
-}
-
-.section-title {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(28px, 4vw, 40px);
-  letter-spacing: -0.02em;
-  font-variation-settings: 'opsz' 144, 'SOFT' 40;
-}
-
-.section-sub {
-  font-size: 13px;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.world-block { margin-bottom: 56px; }
-.world-block:last-child { margin-bottom: 0; }
-
-.world-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.world-name {
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 22px;
-  letter-spacing: -0.01em;
-}
-.world-name .glyph {
-  display: inline-block;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  margin-right: 10px;
-  vertical-align: middle;
-}
-.world-tag {
-  font-size: 12px;
-  color: var(--muted);
-  font-style: italic;
-}
-
-.track-list {
-  list-style: none;
-  border-top: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease);
-}
-
-.track {
-  display: grid;
-  grid-template-columns: 36px 1fr auto auto;
-  gap: 16px;
   align-items: center;
-  padding: 16px 0;
+  justify-content: center;
+}
+
+/* ============================================================
+   PHOTO PLACEHOLDER — replace .coastal-gradient with a real
+   <img> or CSS background-image when photography is ready.
+   Suggested: coastal/ocean horizon shot, morning light, wide crop.
+   Keep .coastal-tagline in place — it overlays the image.
+   ============================================================ */
+.coastal-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    #C85A24 0%,
+    #F5A020 18%,
+    #F7C860 30%,
+    #87CEEB 55%,
+    #2B9E8C 100%
+  );
+}
+
+.coastal-tagline {
+  position: relative;
+  z-index: 1;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: clamp(20px, 2.5vw, 30px);
+  font-weight: 300;
+  color: #fff;
+  text-shadow: 0 1px 24px rgba(0,0,0,0.22);
+  letter-spacing: -0.01em;
+  font-variation-settings: 'opsz' 144;
+}
+
+/* ===== World Label Strip ===== */
+.world-strip {
   border-bottom: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease), background 0.2s var(--ease);
+  padding: 32px 0;
+}
+
+.world-labels {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.world-label {
+  padding: 0 24px;
+  border-right: 1px solid var(--line);
+}
+.world-label:first-child { padding-left: 0; }
+.world-label:last-child { border-right: none; padding-right: 0; }
+
+.world-label-name {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-bottom: 4px;
+  font-variation-settings: 'opsz' 144;
+}
+
+.world-label-desc {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+/* ===== Flat Playlist ===== */
+.playlist-section { padding: 48px 0; }
+
+.track-list { list-style: none; }
+
+.world-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 32px;
+  padding-bottom: 10px;
+}
+.world-divider.first { padding-top: 0; }
+
+.world-divider-name {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.world-divider-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* Track rows */
+.track-row {
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+}
+.track-row:last-child { border-bottom: none; }
+
+.track-slides {
+  display: flex;
+  transition: transform 240ms var(--ease);
+  will-change: transform;
+}
+
+.track-slide {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
   cursor: pointer;
 }
-.track:hover { background: color-mix(in oklab, var(--accent) 4%, transparent); }
-.track.playing { background: color-mix(in oklab, var(--accent) 8%, transparent); }
-.track.empty { opacity: 0.4; cursor: default; }
-.track.empty:hover { background: transparent; }
 
-.track-num {
-  font-family: var(--serif);
-  font-size: 14px;
-  color: var(--muted);
-  font-variant-numeric: tabular-nums;
+.track-row.empty .track-slide { cursor: default; opacity: 0.4; }
+.track-row:not(.empty) .track-slide:hover .track-name { color: var(--accent); }
+.track-row.playing .track-name { color: var(--accent); }
+
+.track-left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
-.track-title {
-  font-size: 16px;
+
+.track-name {
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
+  color: var(--text);
+  transition: color 0.2s var(--ease);
+  white-space: nowrap;
 }
-.track-meta {
-  font-size: 12px;
-  color: var(--muted);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.track-status {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  color: var(--muted);
-  transition: all 0.3s var(--ease);
-}
-.track-status.released { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
-.track-status.demo { color: var(--accent2); border-color: color-mix(in oklab, var(--accent2) 50%, transparent); }
-.track-status.idea { color: var(--muted); }
-.track-status.coming { color: var(--accent); border-color: color-mix(in oklab, var(--accent) 60%, transparent); }
 
-@media (max-width: 640px) {
-  .track { grid-template-columns: 28px 1fr auto; gap: 12px; padding: 14px 0; }
-  .track-meta { display: none; }
-  .track-title { font-size: 15px; }
+.opus-links { display: flex; gap: 6px; align-items: baseline; }
+
+.opus-btn {
+  font-size: 11px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.opus-btn:hover { color: var(--accent); }
+
+.opus-back {
+  font-size: 11px;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+}
+.opus-back:hover { color: var(--accent); }
+
+.track-indicator {
+  flex-shrink: 0;
+  width: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.play-arrow {
+  font-size: 9px;
+  color: var(--muted);
+  transition: color 0.2s;
+  user-select: none;
+}
+.track-row:not(.empty):hover .play-arrow { color: var(--accent); }
+.track-row.playing .play-arrow { display: none; }
+
+.play-bars {
+  display: none;
+  gap: 2px;
+  align-items: flex-end;
+  height: 14px;
+}
+.track-row.playing .play-bars { display: flex; }
+
+.play-bars span {
+  display: block;
+  width: 3px;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: bar-bounce 0.9s ease-in-out infinite alternate;
+}
+.play-bars span:nth-child(2) { animation-delay: 0.15s; }
+.play-bars span:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes bar-bounce {
+  from { height: 4px; }
+  to   { height: 14px; }
 }
 
 /* ===== Footer ===== */
 footer.site {
-  padding: 64px 0 32px;
+  padding: 48px 0 28px;
   border-top: 1px solid var(--line);
-  transition: border-color 1.2s var(--ease);
 }
 .foot-row {
   display: flex;
@@ -341,7 +424,7 @@ footer.site {
   align-items: baseline;
   gap: 24px;
   flex-wrap: wrap;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
 }
 .foot-tag {
@@ -350,11 +433,11 @@ footer.site {
   font-size: 15px;
   color: var(--text);
   opacity: 0.7;
+  margin-bottom: 6px;
 }
 .foot-hash {
-  font-family: var(--sans);
-  font-size: 12px;
-  letter-spacing: 0.12em;
+  font-size: 11px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
 }
@@ -364,11 +447,10 @@ footer.site {
   position: fixed;
   bottom: 0; left: 0; right: 0;
   height: var(--player-h);
-  background: color-mix(in oklab, var(--deep) 92%, transparent);
+  background: rgba(247, 244, 238, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--line);
-  transition: background 1.2s var(--ease), border-color 1.2s var(--ease);
   z-index: 50;
 }
 .player-inner {
@@ -382,20 +464,20 @@ footer.site {
 }
 
 .play-btn {
-  width: 48px; height: 48px;
+  width: 46px; height: 46px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--accent);
-  color: var(--deep);
+  color: #fff;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s var(--ease);
+  transition: background 0.25s var(--ease), transform 0.2s var(--ease);
 }
-.play-btn:hover { transform: scale(1.05); }
-.play-btn svg { width: 20px; height: 20px; }
+.play-btn:hover { background: #A8481C; transform: scale(1.04); }
+.play-btn svg { width: 18px; height: 18px; }
 
 .player-now {
   flex: 1;
@@ -404,15 +486,17 @@ footer.site {
 }
 .now-title {
   font-family: var(--serif);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text);
+  font-variation-settings: 'opsz' 72;
 }
 .now-world {
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -421,8 +505,8 @@ footer.site {
 
 .player-progress {
   flex: 1;
-  max-width: 280px;
-  height: 4px;
+  max-width: 260px;
+  height: 3px;
   background: var(--line);
   border-radius: 2px;
   overflow: hidden;
@@ -439,18 +523,29 @@ footer.site {
 .player-time {
   font-family: var(--serif);
   font-variant-numeric: tabular-nums;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
   white-space: nowrap;
 }
 
+.player.idle .play-btn { opacity: 0.45; cursor: default; }
+.player.idle .now-title { color: var(--muted); font-style: italic; }
+
+/* ===== Responsive ===== */
 @media (max-width: 640px) {
-  :root { --player-h: 76px; }
+  :root { --player-h: 72px; }
   .player-inner { gap: 12px; padding: 0 16px; }
-  .play-btn { width: 40px; height: 40px; }
+  .play-btn { width: 38px; height: 38px; }
   .player-progress { display: none; }
   .player-time { display: none; }
-  .now-title { font-size: 14px; }
+  .now-title { font-size: 13px; }
+  .coastal-backdrop { height: 200px; }
+  .world-labels { grid-template-columns: repeat(2, 1fr); gap: 24px 0; }
+  .world-label { padding: 0 16px; }
+  .world-label:nth-child(2) { border-right: none; }
+  .world-label:nth-child(3) { padding-left: 0; border-right: 1px solid var(--line); }
+  .world-label:nth-child(4) { border-right: none; }
+  .track-name { font-size: 14px; }
 }
 
 /* Hidden SoundCloud iframe — audio engine, not visible */
@@ -461,10 +556,6 @@ footer.site {
   pointer-events: none;
   left: -9999px;
 }
-
-/* Idle state */
-.player.idle .play-btn { opacity: 0.5; cursor: default; }
-.player.idle .now-title { color: var(--muted); font-style: italic; }
 </style>
 </head>
 <body>
@@ -479,24 +570,19 @@ footer.site {
 <header class="site">
   <div class="wrap brand">
     <a href="#" class="wordmark">BIG <span class="musiq">MUSIQ</span></a>
-    <div class="world-pill"><span class="dot"></span><span id="world-name-label">Tidewater · home current</span></div>
+    <div class="world-pill"><span class="dot"></span><span id="world-name-label">Foundation · the seed</span></div>
   </div>
 </header>
 
-<!-- ===== The Beacon (featured single) ===== -->
+<!-- ===== Beacon (featured single — DistroKid release placeholder) ===== -->
 <section class="beacon">
   <div class="wrap">
     <div class="beacon-eyebrow" id="beacon-status">Coming Soon</div>
     <h1 class="beacon-title" id="beacon-title">Open Water</h1>
-    <div class="beacon-meta">
-      <span id="beacon-world">Tidewater</span>
-      <span class="sep">·</span>
-      <span id="beacon-daw">Logic Pro</span>
-    </div>
     <p class="beacon-note" id="beacon-note">First light. The one going to streaming.</p>
     <div class="beacon-actions">
       <button class="btn primary" id="beacon-play">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M8 5v14l11-7z"/></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" width="13" height="13"><path d="M8 5v14l11-7z"/></svg>
         <span>Play The Beacon</span>
       </button>
       <div class="stream-links" id="stream-links"></div>
@@ -504,14 +590,45 @@ footer.site {
   </div>
 </section>
 
-<!-- ===== The Hold (library) ===== -->
-<section class="hold">
+<!-- ============================================================
+     PHOTO PLACEHOLDER — replace .coastal-gradient with a real
+     <img> or CSS background-image when photography is ready.
+     Suggested: coastal/ocean horizon shot, morning light, wide crop.
+     Keep .coastal-tagline centered on top of the image.
+     ============================================================ -->
+<div class="coastal-backdrop">
+  <div class="coastal-gradient"></div>
+  <p class="coastal-tagline">Worlds you can walk into.</p>
+</div>
+
+<!-- ===== Four-World Label Strip ===== -->
+<section class="world-strip">
   <div class="wrap">
-    <div class="section-head">
-      <h2 class="section-title">The Hold</h2>
-      <span class="section-sub">A living archive. Worlds shift as the music moves.</span>
+    <div class="world-labels">
+      <div class="world-label">
+        <div class="world-label-name">Foundation</div>
+        <div class="world-label-desc">the seed</div>
+      </div>
+      <div class="world-label">
+        <div class="world-label-name">Refraction</div>
+        <div class="world-label-desc">how it bends</div>
+      </div>
+      <div class="world-label">
+        <div class="world-label-name">Echo</div>
+        <div class="world-label-desc">refined and shaped</div>
+      </div>
+      <div class="world-label">
+        <div class="world-label-name">Full Circle</div>
+        <div class="world-label-desc">voice on top</div>
+      </div>
     </div>
-    <div id="worlds-container"></div>
+  </div>
+</section>
+
+<!-- ===== Flat Playlist ===== -->
+<section class="playlist-section">
+  <div class="wrap">
+    <ul class="track-list" id="track-list"></ul>
   </div>
 </section>
 
@@ -523,7 +640,7 @@ footer.site {
       <div style="margin-top:6px;">© <span id="year"></span> Big Musiq · A Brownefield Holdings project</div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
-      <a href="./songtree.html" style="font-family:var(--serif);font-style:italic;font-size:15px;color:var(--accent);border-bottom:1px solid color-mix(in oklab, var(--accent) 40%, transparent);padding-bottom:2px;transition:border-color 0.3s ease;">Enter the Living Songtree →</a>
+      <a href="./songtree.html" style="font-family:var(--serif);font-style:italic;font-size:14px;color:var(--accent);border-bottom:1px solid color-mix(in oklab,var(--accent) 35%,transparent);padding-bottom:2px;transition:border-color 0.25s ease;">Enter the Living Songtree →</a>
       <div class="foot-hash">#hellagoodmusiq</div>
     </div>
   </div>
@@ -549,79 +666,88 @@ footer.site {
    ===================== CONFIG BLOCK =========================
    Paste SoundCloud track URLs in `scUrl` fields below.
    Format: https://soundcloud.com/your-name/track-name
-   To add a song: copy one line in TRACKS, paste a URL, pick a world.
+
+   DERIVATIVE TRACKS SCHEMA — how to add opus variants:
+   {
+     title: "Track Name",
+     world: "foundation",   // foundation | refraction | echo | fullcircle
+     scUrl: "",
+     derivatives: [
+       { title: "Track Name (opus 2)", scUrl: "" },
+       { title: "Track Name (opus 3)", scUrl: "" },
+     ]
+   }
+   Clicking "opus 2" slides in the derivative inline.
+   Leave derivatives: [] if the track has no variants yet.
    ============================================================ */
 
 const BEACON = {
   title:  "Open Water",
-  status: "coming soon",          // e.g. "out now" once it's live
-  world:  "tidewater",
-  daw:    "Logic Pro",
+  status: "coming soon",
+  world:  "foundation",
   note:   "First light. The one going to streaming.",
-  scUrl:  "",                      // <-- paste your single's SoundCloud URL
-  links: [                         // <-- streaming links (use "#" until live)
-    { label:"Spotify",     href:"#" },
-    { label:"Apple Music", href:"#" },
-    { label:"iTunes",      href:"#" },
-    { label:"YouTube",     href:"#" },
+  scUrl:  "",
+  links: [
+    { label: "Spotify",     href: "#" },
+    { label: "Apple Music", href: "#" },
+    { label: "iTunes",      href: "#" },
+    { label: "YouTube",     href: "#" },
   ],
 };
 
 const TRACKS = [
-  { title:"Salt & Cedar",       world:"tidewater",   daw:"Logic Pro", status:"demo",     scUrl:"" },
-  { title:"Lantern, No Map",    world:"tidewater",   daw:"FL Studio", status:"idea",     scUrl:"" },
-  { title:"Low Tide Theme",     world:"tidewater",   daw:"Logic Pro", status:"demo",     scUrl:"" },
-  { title:"Furnace Hymn",       world:"emberfall",   daw:"FL Studio", status:"demo",     scUrl:"" },
-  { title:"Rust on the Hull",   world:"emberfall",   daw:"FL Studio", status:"idea",     scUrl:"" },
-  { title:"Amber Drift",        world:"emberfall",   daw:"Logic Pro", status:"released", scUrl:"" },
-  { title:"Held Breath",        world:"glasswater",  daw:"Logic Pro", status:"idea",     scUrl:"" },
-  { title:"Skylight",           world:"glasswater",  daw:"FL Studio", status:"demo",     scUrl:"" },
-  { title:"Cathedral of Air",   world:"glasswater",  daw:"Logic Pro", status:"demo",     scUrl:"" },
-  { title:"Below the Keel",     world:"deepcurrent", daw:"FL Studio", status:"idea",     scUrl:"" },
-  { title:"Pressure",           world:"deepcurrent", daw:"Logic Pro", status:"demo",     scUrl:"" },
-  { title:"Ten Thousand Things",world:"deepcurrent", daw:"FL Studio", status:"idea",     scUrl:"" },
+  { title: "Salt & Cedar",         world: "foundation", scUrl: "", derivatives: [] },
+  { title: "Lantern, No Map",      world: "foundation", scUrl: "", derivatives: [] },
+  { title: "Low Tide Theme",       world: "foundation", scUrl: "", derivatives: [] },
+  { title: "Furnace Hymn",         world: "refraction", scUrl: "", derivatives: [] },
+  { title: "Rust on the Hull",     world: "refraction", scUrl: "", derivatives: [] },
+  { title: "Amber Drift",          world: "refraction", scUrl: "", derivatives: [] },
+  { title: "Held Breath",          world: "echo",       scUrl: "", derivatives: [] },
+  { title: "Skylight",             world: "echo",       scUrl: "", derivatives: [] },
+  { title: "Cathedral of Air",     world: "echo",       scUrl: "", derivatives: [] },
+  { title: "Below the Keel",       world: "fullcircle", scUrl: "", derivatives: [] },
+  { title: "Pressure",             world: "fullcircle", scUrl: "", derivatives: [] },
+  { title: "Ten Thousand Things",  world: "fullcircle", scUrl: "", derivatives: [] },
 ];
 
 const WORLDS = {
-  tidewater:  { name:"Tidewater",  tag:"home current",       bg:"#08161a", deep:"#040d10", accent:"#e8c98f", accent2:"#5fa8a0", text:"#eef3f1", muted:"#7e918d", line:"#1b2f33" },
-  emberfall:  { name:"Emberfall",  tag:"warm dark",          bg:"#170d0a", deep:"#0c0604", accent:"#e08a4a", accent2:"#b8553a", text:"#f4e9df", muted:"#9b7c6c", line:"#2e1c14" },
-  glasswater: { name:"Glasswater", tag:"airy + bright",      bg:"#0a1320", deep:"#050a12", accent:"#cfe3ef", accent2:"#7fb6d8", text:"#eef4fa", muted:"#7e93a8", line:"#16263a" },
-  deepcurrent:{ name:"Deepcurrent",tag:"low + slow",         bg:"#0c0d18", deep:"#06060e", accent:"#9aa0e0", accent2:"#5a5fae", text:"#e9eaf6", muted:"#7c7e9a", line:"#1a1b2c" },
+  foundation:  { name: "Foundation",  desc: "the seed",          accent: "#C85A24", accent2: "#F5A020" },
+  refraction:  { name: "Refraction",  desc: "how it bends",      accent: "#C86018", accent2: "#D04010" },
+  echo:        { name: "Echo",        desc: "refined and shaped", accent: "#3A8AB0", accent2: "#6EB5D5" },
+  fullcircle:  { name: "Full Circle", desc: "voice on top",      accent: "#1A7068", accent2: "#2A9888" },
 };
 /* =================== END CONFIG ============================ */
 
 
 // ============================================================
-// THEMING
+// THEMING — accent shift only; page stays morning-coastal
 // ============================================================
 function applyWorld(key) {
   const w = WORLDS[key];
   if (!w) return;
   const r = document.documentElement.style;
-  r.setProperty('--bg', w.bg);
-  r.setProperty('--deep', w.deep);
-  r.setProperty('--accent', w.accent);
+  r.setProperty('--accent',  w.accent);
   r.setProperty('--accent2', w.accent2);
-  r.setProperty('--text', w.text);
-  r.setProperty('--muted', w.muted);
-  r.setProperty('--line', w.line);
-  document.getElementById('world-name-label').textContent = `${w.name} · ${w.tag}`;
+  document.getElementById('world-name-label').textContent = `${w.name} · ${w.desc}`;
 }
 
 // ============================================================
 // RENDER BEACON
 // ============================================================
 function renderBeacon() {
-  document.getElementById('beacon-title').textContent = BEACON.title;
+  document.getElementById('beacon-title').textContent  = BEACON.title;
   document.getElementById('beacon-status').textContent = BEACON.status.toUpperCase();
-  document.getElementById('beacon-world').textContent = WORLDS[BEACON.world]?.name || BEACON.world;
-  document.getElementById('beacon-daw').textContent = BEACON.daw;
-  document.getElementById('beacon-note').textContent = BEACON.note;
+  document.getElementById('beacon-note').textContent   = BEACON.note;
 
   const linksEl = document.getElementById('stream-links');
   linksEl.innerHTML = '';
   BEACON.links.forEach((link, i) => {
-    if (i > 0) linksEl.appendChild(Object.assign(document.createElement('span'), { textContent: '·', style: 'color:var(--line)' }));
+    if (i > 0) {
+      const sep = document.createElement('span');
+      sep.textContent = '·';
+      sep.style.color = 'var(--line)';
+      linksEl.appendChild(sep);
+    }
     const a = document.createElement('a');
     a.href = link.href;
     a.textContent = link.label;
@@ -643,78 +769,130 @@ function renderBeacon() {
 }
 
 // ============================================================
-// RENDER LIBRARY (THE HOLD)
+// RENDER FLAT PLAYLIST
 // ============================================================
-function renderLibrary() {
-  const container = document.getElementById('worlds-container');
-  container.innerHTML = '';
+function renderPlaylist() {
+  const list = document.getElementById('track-list');
+  list.innerHTML = '';
 
-  const order = ['tidewater', 'emberfall', 'glasswater', 'deepcurrent'];
+  const order = ['foundation', 'refraction', 'echo', 'fullcircle'];
+  let firstWorld = true;
 
   order.forEach(worldKey => {
-    const world = WORLDS[worldKey];
+    const world  = WORLDS[worldKey];
     const tracks = TRACKS.filter(t => t.world === worldKey);
     if (tracks.length === 0) return;
 
-    const block = document.createElement('div');
-    block.className = 'world-block';
-    block.innerHTML = `
-      <div class="world-head">
-        <div class="world-name"><span class="glyph" style="background:${world.accent}"></span>${world.name}</div>
-        <div class="world-tag">${world.tag}</div>
+    // World divider label
+    const dividerLi = document.createElement('li');
+    dividerLi.setAttribute('role', 'presentation');
+    dividerLi.innerHTML = `
+      <div class="world-divider${firstWorld ? ' first' : ''}">
+        <span class="world-divider-name">${world.name}</span>
+        <span class="world-divider-line"></span>
       </div>
-      <ul class="track-list"></ul>
     `;
+    list.appendChild(dividerLi);
+    firstWorld = false;
 
-    const list = block.querySelector('.track-list');
-    tracks.forEach((track, i) => {
-      const li = document.createElement('li');
-      li.className = 'track' + (track.scUrl ? '' : ' empty');
-      li.innerHTML = `
-        <div class="track-num">${String(i + 1).padStart(2, '0')}</div>
-        <div class="track-title">${track.title}</div>
-        <div class="track-meta">${track.daw}</div>
-        <div class="track-status ${track.status === 'coming soon' ? 'coming' : track.status}">${track.status}</div>
-      `;
-      if (track.scUrl) {
-        li.addEventListener('click', () => playTrack(track));
+    tracks.forEach(track => {
+      const hasDerivatives = track.derivatives && track.derivatives.length > 0;
+      const row = document.createElement('li');
+      row.className = 'track-row' + (track.scUrl ? '' : ' empty');
+
+      // All slides: original first, then derivatives
+      const allSlides = [track, ...(track.derivatives || [])];
+
+      const slidesHtml = allSlides.map((slide, idx) => {
+        const isOriginal = idx === 0;
+
+        // Opus forward buttons (original slide only)
+        let opusHtml = '';
+        if (isOriginal && hasDerivatives) {
+          opusHtml = `<span class="opus-links">` +
+            track.derivatives.map((_, di) =>
+              `<button class="opus-btn" data-target="${di + 1}">opus ${di + 2}</button>`
+            ).join('') +
+            `</span>`;
+        }
+
+        // Back link (derivative slides only)
+        const backHtml = !isOriginal
+          ? `<button class="opus-back">← original</button>`
+          : '';
+
+        return `
+          <div class="track-slide" data-sc-url="${slide.scUrl || ''}" data-world="${track.world}">
+            <div class="track-left">
+              <span class="track-name">${slide.title}</span>
+              ${opusHtml}
+              ${backHtml}
+            </div>
+            <div class="track-indicator">
+              <div class="play-bars"><span></span><span></span><span></span></div>
+              <span class="play-arrow">▶</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      row.innerHTML = `<div class="track-slides">${slidesHtml}</div>`;
+
+      // Slide navigation
+      const slidesEl = row.querySelector('.track-slides');
+
+      function goToSlide(idx) {
+        slidesEl.style.transform = `translateX(-${idx * 100}%)`;
       }
-      list.appendChild(li);
-    });
 
-    container.appendChild(block);
+      row.querySelectorAll('.opus-btn').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          goToSlide(parseInt(btn.dataset.target));
+        });
+      });
+
+      row.querySelectorAll('.opus-back').forEach(btn => {
+        btn.addEventListener('click', e => {
+          e.stopPropagation();
+          goToSlide(0);
+        });
+      });
+
+      row.querySelectorAll('.track-slide').forEach(slide => {
+        slide.addEventListener('click', () => {
+          const url   = slide.dataset.scUrl;
+          const world = slide.dataset.world;
+          const title = slide.querySelector('.track-name').textContent;
+          if (!url) return;
+          playTrack({ title, world, scUrl: url });
+          document.querySelectorAll('.track-row').forEach(r => r.classList.remove('playing'));
+          row.classList.add('playing');
+        });
+      });
+
+      list.appendChild(row);
+    });
   });
 }
 
 // ============================================================
 // SOUNDCLOUD PLAYER
 // ============================================================
-let scWidget = null;
+let scWidget    = null;
 let currentTrack = null;
-let isPlaying = false;
-let duration = 0;
+let isPlaying   = false;
+let duration    = 0;
 
 function initWidget() {
   const iframe = document.getElementById('sc-frame');
   scWidget = SC.Widget(iframe);
-  scWidget.bind(SC.Widget.Events.READY, () => {
-    // Ready, but no track loaded yet
-  });
-  scWidget.bind(SC.Widget.Events.PLAY, () => {
-    isPlaying = true;
-    updatePlayIcon();
-  });
-  scWidget.bind(SC.Widget.Events.PAUSE, () => {
-    isPlaying = false;
-    updatePlayIcon();
-  });
-  scWidget.bind(SC.Widget.Events.FINISH, () => {
-    isPlaying = false;
-    updatePlayIcon();
-  });
+  scWidget.bind(SC.Widget.Events.READY, () => {});
+  scWidget.bind(SC.Widget.Events.PLAY,  () => { isPlaying = true;  updatePlayIcon(); });
+  scWidget.bind(SC.Widget.Events.PAUSE, () => { isPlaying = false; updatePlayIcon(); });
+  scWidget.bind(SC.Widget.Events.FINISH,() => { isPlaying = false; updatePlayIcon(); });
   scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, (e) => {
-    const fill = document.getElementById('progress-fill');
-    fill.style.width = (e.relativePosition * 100) + '%';
+    document.getElementById('progress-fill').style.width = (e.relativePosition * 100) + '%';
     if (duration > 0) {
       const cur = e.currentPosition / 1000;
       document.getElementById('time').textContent = `${fmtTime(cur)} / ${fmtTime(duration / 1000)}`;
@@ -730,25 +908,15 @@ function fmtTime(sec) {
 
 function playTrack(track) {
   if (!scWidget || !track.scUrl) return;
-
-  // Highlight in list
-  document.querySelectorAll('.track').forEach(el => el.classList.remove('playing'));
-
   currentTrack = track;
   applyWorld(track.world);
-
-  // Update player UI
   document.getElementById('player').classList.remove('idle');
   document.getElementById('now-title').textContent = track.title;
   document.getElementById('now-world').textContent = WORLDS[track.world]?.name || track.world;
-
-  // Load into widget
   scWidget.load(track.scUrl, {
     auto_play: true,
     visual: false,
-    callback: () => {
-      scWidget.getDuration((d) => { duration = d; });
-    }
+    callback: () => { scWidget.getDuration(d => { duration = d; }); }
   });
 }
 
@@ -759,18 +927,14 @@ function togglePlay() {
 }
 
 function updatePlayIcon() {
-  const icon = document.getElementById('play-icon');
-  if (isPlaying) {
-    icon.innerHTML = '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>';
-  } else {
-    icon.innerHTML = '<path d="M8 5v14l11-7z"/>';
-  }
+  document.getElementById('play-icon').innerHTML = isPlaying
+    ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>'
+    : '<path d="M8 5v14l11-7z"/>';
 }
 
-// Progress bar click-to-seek
 document.getElementById('progress').addEventListener('click', (e) => {
   if (!scWidget || !duration) return;
-  const rect = e.currentTarget.getBoundingClientRect();
+  const rect  = e.currentTarget.getBoundingClientRect();
   const ratio = (e.clientX - rect.left) / rect.width;
   scWidget.seekTo(duration * ratio);
 });
@@ -781,9 +945,9 @@ document.getElementById('play-toggle').addEventListener('click', togglePlay);
 // BOOT
 // ============================================================
 document.getElementById('year').textContent = new Date().getFullYear();
-applyWorld('tidewater');
+applyWorld('foundation');
 renderBeacon();
-renderLibrary();
+renderPlaylist();
 initWidget();
 </script>
 </body>
